@@ -67,3 +67,7 @@ docker-compose.override.yml
 
 # Local LLM Wiki vault
 .llm-wiki
+.cursor/rules/cyt-injection.mdc
+.cursor/cyt
+
+docker/nono/profiles/default/claude.json

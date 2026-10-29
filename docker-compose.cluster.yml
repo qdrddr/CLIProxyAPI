@@ -6,15 +6,19 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        VERSION: ${VERSION:-dev}
+        VERSION: ${VERSION:-v8.0.47}
         COMMIT: ${COMMIT:-none}
         BUILD_DATE: ${BUILD_DATE:-unknown}
+        NONO_VERSION: ${NONO_VERSION:-0.80.0}
     container_name: cli-proxy-api-cluster
     environment:
       HOME_JWT: ${HOME_JWT:-}
+      NONO_PROFILE: ${NONO_PROFILE:-claude}
+      NONO_RUN_ARGS: ${NONO_RUN_ARGS:-}
     ports:
       - "8317:8317"
     volumes:
+      - ${NONO_PROFILE_PATH:-./docker/nono/profiles/claude.json}:/root/.config/nono/profiles/claude.json:ro
       - ${CLI_PROXY_HOME_PATH:-./home}:/root/.cli-proxy-api
       - ${CLI_PROXY_LOG_PATH:-./logs}:/CLIProxyAPI/logs
       - ${CLI_PROXY_PLUGIN_PATH:-./plugins}:/CLIProxyAPI/plugins
