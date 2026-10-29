@@ -1,19 +1,22 @@
 services:
   cli-proxy-api:
-    image: ${CLI_PROXY_IMAGE:-eceasy/cli-proxy-api:latest}
+    image: ${CLI_PROXY_IMAGE:-bbkudk/cli-proxy-api:latest}
     pull_policy: always
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        VERSION: ${VERSION:-dev}
+        VERSION: ${VERSION:-v8.0.47}
         COMMIT: ${COMMIT:-none}
         BUILD_DATE: ${BUILD_DATE:-unknown}
+        NONO_VERSION: ${NONO_VERSION:-0.80.0}
     container_name: cli-proxy-api
     # env_file:
     #   - .env
     environment:
       DEPLOY: ${DEPLOY:-}
+      NONO_PROFILE: ${NONO_PROFILE:-claude}
+      NONO_RUN_ARGS: ${NONO_RUN_ARGS:-}
     ports:
       - "8317:8317"
       - "8085:8085"
@@ -22,7 +25,11 @@ services:
       - "51121:51121"
       - "11451:11451"
     volumes:
-      - ${CLI_PROXY_CONFIG_PATH:-./config.yaml}:/CLIProxyAPI/config.yaml
+      # OAuth token exchange needs provider hosts in allow_domain (see docker/nono/profiles/claude.json).
+      - ${NONO_PROFILE_PATH:-./docker/nono/profiles/claude.json}:/root/.config/nono/profiles/claude.json:ro
+      # Bind an existing file only: if ./config.yaml is missing, Docker creates a directory and breaks the entrypoint.
+      # Default to config.example.yaml for first run; set CLI_PROXY_CONFIG_PATH=./config.yaml once you have a real config.
+      - ${CLI_PROXY_CONFIG_PATH:-./config.example.yaml}:/CLIProxyAPI/config.yaml:ro
       - ${CLI_PROXY_AUTH_PATH:-./auths}:/root/.cli-proxy-api
       - ${CLI_PROXY_LOG_PATH:-./logs}:/CLIProxyAPI/logs
       - ${CLI_PROXY_PLUGIN_PATH:-./plugins}:/CLIProxyAPI/plugins
