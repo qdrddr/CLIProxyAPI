@@ -25,6 +25,7 @@ services:
       - "51121:51121"
       - "11451:11451"
     volumes:
+      # OAuth token exchange needs provider hosts in allow_domain (see docker/nono/profiles/claude.json).
       - ${NONO_PROFILE_PATH:-./docker/nono/profiles/claude.json}:/root/.config/nono/profiles/claude.json:ro
       # Bind an existing file only: if ./config.yaml is missing, Docker creates a directory and breaks the entrypoint.
       # Default to config.example.yaml for first run; set CLI_PROXY_CONFIG_PATH=./config.yaml once you have a real config.
