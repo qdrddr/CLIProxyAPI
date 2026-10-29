@@ -71,3 +71,4 @@ docker-compose.override.yml
 .cursor/cyt
 
 docker/nono/profiles/default/claude.json
+docker/nono/profiles/claude copy.json

@@ -9,8 +9,13 @@ mkdir -p "${STAGE}" "${AUTH_STAGE}"
 
 # Bind mounts are applied before PID 1 starts, but Landlock cannot read them reliably.
 # Stage config and auth material into the image tree (unsandboxed) before launching nono.
-if [ -r /CLIProxyAPI/config.yaml ]; then
+if [ -f /CLIProxyAPI/config.yaml ]; then
   cp /CLIProxyAPI/config.yaml "${CONFIG_STAGE}"
+elif [ -d /CLIProxyAPI/config.yaml ]; then
+  echo "ERROR: /CLIProxyAPI/config.yaml is a directory, not a file." >&2
+  echo "On the host, remove the mistaken directory (often created when docker run ran before config.yaml existed):" >&2
+  echo "  rm -rf config.yaml && cp config.example.yaml config.yaml" >&2
+  exit 1
 else
   cp /CLIProxyAPI/config.example.yaml "${CONFIG_STAGE}"
 fi
